@@ -1,5 +1,6 @@
 package com.dicoding.habitapp.ui.list
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -9,18 +10,21 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.habitapp.R
 import com.dicoding.habitapp.data.Habit
+import com.dicoding.habitapp.ui.random.RandomHabitAdapter
+import java.util.*
 
 class HabitAdapter(
     private val onClick: (Habit) -> Unit
 ) : PagedListAdapter<Habit, HabitAdapter.HabitViewHolder>(DIFF_CALLBACK) {
 
     //TODO 8 : Create and initialize ViewHolder
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
-        throw NotImplementedError("Not yet implemented")
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        HabitViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.habit_item, parent, false)
+        )
 
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
-        //TODO 9 : Get data and bind them to ViewHolder
+        getItem(position)?.let { holder.bind(it) }
     }
 
     inner class HabitViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -39,6 +43,19 @@ class HabitAdapter(
             itemView.setOnClickListener {
                 onClick(habit)
             }
+
+            val priorityLevel = RandomHabitAdapter.PageType.valueOf(
+                habit.priorityLevel.uppercase(
+                    Locale.ROOT
+                )
+            )
+            ivPriority.setImageResource(
+                when (priorityLevel) {
+                    RandomHabitAdapter.PageType.HIGH -> R.drawable.ic_priority_high
+                    RandomHabitAdapter.PageType.LOW -> R.drawable.ic_priority_low
+                    RandomHabitAdapter.PageType.MEDIUM -> R.drawable.ic_priority_medium
+                }
+            )
         }
 
     }
